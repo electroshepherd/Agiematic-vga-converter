@@ -308,9 +308,6 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 				end
 				GET_RESP:begin
 					in_rd_index <=0;
-					/*idk why do we  need to use it. 
-					* I think we'll control LEDS or something...
-					*/
 					if (bvalid)begin
 						in_state <= IDLE;
 					end
