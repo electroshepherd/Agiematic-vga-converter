@@ -4,7 +4,8 @@ module transactor #(
 	parameter SEND_DATA = 2,
 	parameter READ_DATA = 2,
 	parameter GET_RESP = 3,
-	parameter PIX_SIZE = 16
+	parameter PIX_SIZE = 16,
+	parameter TRANSFERS_NEEDED = 2
 )
 	(
 /*********write channel********/
@@ -78,6 +79,7 @@ module transactor #(
 	input wire resetn, clk25, aclk
 /*************************************************/
 );
+	reg num_transfers; //we need 2 transfers for a line (320 words);
 	wire in_active_h, in_active_v, out_active_h, out_active_v;
 	wire [31:0] base1;
 	wire [31:0] base2;
@@ -90,6 +92,7 @@ module transactor #(
 	reg frame; //memory frame buffer pointer
 
 	initial begin
+		num_transfers<=1;
 		in_state<=0;
 		out_offset <=0;
 		in_offset <=0;
@@ -147,8 +150,8 @@ module transactor #(
 	assign wstrb = 4'hf;
 	assign arburst = 2'b01;
 	assign awburst = 2'b01;
-	assign awlen = 159;//1 line in 32-bit mode
-	assign arlen = 159;
+	assign awlen = 159;//1/2 line in 32-bit mode
+	assign arlen = 159;//2 transfers needed for 1 line
 
 	assign base1 = 32'h1000_0000;
 	assign base2 = 32'h1009_6000;
@@ -179,7 +182,7 @@ module transactor #(
 				out_rd_index<=0;
 				rgb_o <=0;
 			end
-			if (out_h_cnt == 654) begin //655 instead of 656
+			if (out_h_cnt == 640) begin //640 instead of 656
 				if (out_active_v)
 					out_offset <= out_offset +640*(PIX_SIZE/8);
 				else out_offset <=0;
@@ -293,6 +296,7 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 			/*---WRITE---*/
 			case (in_state)
 				IDLE:begin
+					num_transfers<=TRANSFERS_NEEDED-1;
 					if (in_h_cnt >0 && in_h_cnt <64 && in_active_v) begin
 						in_state <= SEND_ADDR;
 					end
@@ -309,7 +313,14 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 				GET_RESP:begin
 					in_rd_index <=0;
 					if (bvalid)begin
-						in_state <= IDLE;
+						if(num_transfers>0) begin
+							num_transfers<=num_transfers-1;
+						       	in_state<=SEND_ADDR;
+						end
+						else begin 
+							in_state <= IDLE;
+							in_rd_index <=0;
+						end
 					end
 
 				end
