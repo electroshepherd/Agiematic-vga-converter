@@ -8,5 +8,4 @@ this is only an FPGA module. you also need a constraints file to specify clocks 
 i've made an ADC using three AD9283 ICs, i might publish kicad sources soon.
 ## project state
 ### broken lol
-now we get DECERR BRESP signal. it became so after i changed the pixel size from 8 to 16 bits. 
-but when it was 8, all worked fine. Unfortunately, that 8-bit version wasn't saved and has been lost.
+now we have strange output, but it works in debug mode... 
