@@ -92,8 +92,8 @@ module transactor #(
 	reg frame; //memory frame buffer pointer
 
 	initial begin
-		r_num_transfers<=1;
-		w_num_transfers<=1;
+		r_num_transfers<=TRANSFERS_NEEDED-1;
+		w_num_transfers<=TRANSFERS_NEEDED-1;
 		in_state<=0;
 		out_offset <=0;
 		in_offset <=0;
@@ -284,7 +284,7 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 /**************************AXI*************************************/
 	/*-WRITE-*/
 	assign awvalid = (in_state == SEND_ADDR);
-	assign wlast = (in_rd_index == 159);// && wready && wvalid);
+	assign wlast = (in_rd_index == 159 || in_rd_index==319);// && wready && wvalid);
 	assign wvalid = (in_state == SEND_DATA || in_state == SEND_ADDR);
 	assign bready = (in_state == GET_RESP);
 
@@ -368,8 +368,8 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 	end
 
 /**********trash ports****************/
-	assign awprot = 3'b010;
-	assign arprot = 3'b010;
+	assign awprot = 3'b000;
+	assign arprot = 3'b000;
 	assign awid = 1;
 	assign arid = 0;
 	assign awcache = 4'b0011;
