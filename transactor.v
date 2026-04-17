@@ -284,7 +284,7 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 /**************************AXI*************************************/
 	/*-WRITE-*/
 	assign awvalid = (in_state == SEND_ADDR);
-	assign wlast = (in_rd_index == 159 || in_rd_index==319);// && wready && wvalid);
+	assign wlast = (in_rd_index == 159 || in_rd_index == 319);// && wready && wvalid);
 	assign wvalid = (in_state == SEND_DATA || in_state == SEND_ADDR);
 	assign bready = (in_state == GET_RESP);
 
@@ -318,6 +318,7 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 						       	in_state<=SEND_ADDR;
 						end
 						else begin 
+							in_rd_index <=0;
 							in_state <= IDLE;
 							in_rd_index <=0;
 						end
