@@ -312,7 +312,6 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 					if (wlast) in_state <= GET_RESP;
 				end
 				GET_RESP:begin
-					in_rd_index <=0;
 					if (bvalid)begin
 						if(w_num_transfers>0) begin
 							w_num_transfers<=w_num_transfers-1;
