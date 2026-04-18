@@ -108,8 +108,8 @@ module transactor #(
 	(* ram_style = "block" *)     //16 bit per pixel
 	reg [31:0] in_buffer [0:640/(32/PIX_SIZE)-1]; //buffer for 1 line in 32-bit mode
 	reg [31:0] in_wrd;
-	reg [7:0] in_wr_index;
-	reg [7:0] in_rd_index;
+	reg [8:0] in_wr_index;
+	reg [8:0] in_rd_index;
 	reg [1:0] in_wr_ptr;
 	integer i;
 	initial begin
@@ -129,8 +129,8 @@ module transactor #(
 	reg [1:0] out_state;
         reg [10:0] out_h_cnt;
         reg [10:0] out_v_cnt;
-	reg [7:0]out_wr_index;
-	reg [7:0]out_rd_index;
+	reg [8:0]out_wr_index;
+	reg [8:0]out_rd_index;
 	reg [1:0]out_rd_ptr;
 	initial begin 
 		out_wrd <=0;
@@ -285,7 +285,7 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 	/*-WRITE-*/
 	assign awvalid = (in_state == SEND_ADDR);
 	assign wlast = (in_rd_index == 159 || in_rd_index == 319);// && wready && wvalid);
-	assign wvalid = (in_state == SEND_DATA || in_state == SEND_ADDR);
+	assign wvalid = (in_state == SEND_DATA);// || in_state == SEND_ADDR);
 	assign bready = (in_state == GET_RESP);
 
 	/*-READ-*/
@@ -318,12 +318,10 @@ line timings for Agiematic CD, measured in aclk (20MHz) cycles.
 						       	in_state<=SEND_ADDR;
 						end
 						else begin 
-							in_rd_index <=0;
 							in_state <= IDLE;
 							in_rd_index <=0;
 						end
 					end
-
 				end
 				default: in_state <= IDLE;
 			endcase
